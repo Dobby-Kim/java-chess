@@ -23,8 +23,9 @@ public enum ChessSymbol {
 
     public static char getSymbolForRole(String role) {
         return Arrays.stream(ChessSymbol.values())
-                .filter(piece -> piece.name()
-                .equalsIgnoreCase(role))
+                .filter(piece -> role.toLowerCase()
+                        .contains(piece.name()
+                                .toLowerCase()))
                 .findFirst()
                 .map(ChessSymbol::getAbbreviation)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Role을 조회하였습니다."));
