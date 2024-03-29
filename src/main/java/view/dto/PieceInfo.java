@@ -3,9 +3,7 @@ package view.dto;
 import model.piece.PieceHolder;
 import model.position.Position;
 
-public record PieceInfo(
-        Position position,
-        PieceHolder pieceHolder) {
+public record PieceInfo(Position position, PieceHolder pieceHolder) {
 
     public int file() {
         return position().file();
@@ -16,7 +14,8 @@ public record PieceInfo(
     }
 
     public String role() {
-        return pieceHolder.getClass()
+        return pieceHolder.getRole()
+                .getClass()
                 .getSimpleName();
     }
 
