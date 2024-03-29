@@ -7,14 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static util.RankConverter.EIGHT;
-import static util.RankConverter.FIVE;
-import static util.RankConverter.FOUR;
-import static util.RankConverter.ONE;
-import static util.RankConverter.SEVEN;
-import static util.RankConverter.SIX;
-import static util.RankConverter.THREE;
-import static util.RankConverter.TWO;
+import static util.Rank.EIGHT;
+import static util.Rank.FIVE;
+import static util.Rank.FOUR;
+import static util.Rank.ONE;
+import static util.Rank.SEVEN;
+import static util.Rank.SIX;
+import static util.Rank.THREE;
+import static util.Rank.TWO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -127,14 +127,14 @@ class CurrentTurnTest {
 
     private void initBoard() {
         for (int i = 1; i <= 8; i++) {
-            chessBoard.put(Position.of(i, ONE.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, TWO.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, THREE.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, FOUR.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, FIVE.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, SIX.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, SEVEN.getValue()), new PieceHolder(new Square()));
-            chessBoard.put(Position.of(i, EIGHT.getValue()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, ONE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, TWO.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, THREE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, FOUR.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, FIVE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, SIX.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, SEVEN.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, EIGHT.value()), new PieceHolder(new Square()));
         }
     }
 }

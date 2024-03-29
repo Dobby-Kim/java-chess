@@ -13,19 +13,7 @@ public class InfoMapper {
         return chessBoard.getChessBoard()
                 .entrySet()
                 .stream()
-                .map(entry -> new PieceInfo(
-                        entry.getKey()
-                                .file(),
-                        entry.getKey()
-                                .rank(),
-                        entry.getValue()
-                                .getRole()
-                                .getClass()
-                                .getSimpleName(),
-                        entry.getValue()
-                                .getColor()
-                                .name())
-                )
+                .map(entry -> new PieceInfo(entry.getKey(), entry.getValue()))
                 .toList();
     }
 }
