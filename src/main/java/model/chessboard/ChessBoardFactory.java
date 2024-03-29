@@ -6,16 +6,13 @@ import static util.File.*;
 import static util.Rank.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import model.piece.Color;
 import model.piece.PieceHolder;
 import model.piece.role.Bishop;
 import model.piece.role.King;
 import model.piece.role.Knight;
 import model.piece.role.Pawn;
 import model.piece.role.Queen;
-import model.piece.role.Role;
 import model.piece.role.Rook;
 import model.piece.role.Square;
 import model.position.Position;
@@ -27,40 +24,34 @@ public class ChessBoardFactory {
     }
 
     public static Map<Position, PieceHolder> create() {
-        initRookBishopKnight();
+        initRook();
+        initKnight();
+        initBishop();
         initKingQueen();
         initPawn();
         initSquare();
         return chessBoard;
     }
 
-    private static void initRookBishopKnight() {
-        initWhiteRookBishopKnight();
-        initBlackRookBishopKnight();
+    private static void initRook() {
+        chessBoard.put(Position.of(A.value(), ONE.value()), new PieceHolder(Rook.from(WHITE)));
+        chessBoard.put(Position.of(H.value(), ONE.value()), new PieceHolder(Rook.from(WHITE)));
+        chessBoard.put(Position.of(A.value(), EIGHT.value()), new PieceHolder(Rook.from(BLACK)));
+        chessBoard.put(Position.of(H.value(), EIGHT.value()), new PieceHolder(Rook.from(BLACK)));
     }
 
-    private static void initWhiteRookBishopKnight() {
-        List<Role> whiteTypePieces = generateColoredPieces(WHITE);
-        for (int file = A.value(); file <= C.value(); file++) {
-            Role role = whiteTypePieces.get(file - 1);
-            int mirrorFileIndex = 9 - file;
-            chessBoard.put(Position.of(file, ONE.value()), new PieceHolder(role));
-            chessBoard.put(Position.of(mirrorFileIndex, ONE.value()), new PieceHolder(role));
-        }
+    private static void initKnight() {
+        chessBoard.put(Position.of(B.value(), ONE.value()), new PieceHolder(Knight.from(WHITE)));
+        chessBoard.put(Position.of(G.value(), ONE.value()), new PieceHolder(Knight.from(WHITE)));
+        chessBoard.put(Position.of(B.value(), EIGHT.value()), new PieceHolder(Knight.from(BLACK)));
+        chessBoard.put(Position.of(G.value(), EIGHT.value()), new PieceHolder(Knight.from(BLACK)));
     }
 
-    private static void initBlackRookBishopKnight() {
-        List<Role> blackTypePieces = generateColoredPieces(BLACK);
-        for (int file = A.value(); file <= C.value(); file++) {
-            Role role = blackTypePieces.get(file - 1);
-            int mirrorFileIndex = 9 - file;
-            chessBoard.put(Position.of(file, EIGHT.value()), new PieceHolder(role));
-            chessBoard.put(Position.of(mirrorFileIndex, EIGHT.value()), new PieceHolder(role));
-        }
-    }
-
-    private static List<Role> generateColoredPieces(Color color) {
-        return List.of(Rook.from(color), Knight.from(color), Bishop.from(color));
+    private static void initBishop() {
+        chessBoard.put(Position.of(C.value(), ONE.value()), new PieceHolder(Bishop.from(WHITE)));
+        chessBoard.put(Position.of(F.value(), ONE.value()), new PieceHolder(Bishop.from(WHITE)));
+        chessBoard.put(Position.of(C.value(), EIGHT.value()), new PieceHolder(Bishop.from(BLACK)));
+        chessBoard.put(Position.of(F.value(), EIGHT.value()), new PieceHolder(Bishop.from(BLACK)));
     }
 
     private static void initKingQueen() {
