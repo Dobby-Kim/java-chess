@@ -30,7 +30,7 @@ public class Route {
         Collections.reverse(reversedPositions);
         reversedPositions.remove(0);
         Position beforeLastPosition = positions.get(0);
-        if (beforeLastPosition.hasAvailableNextPostitionToDirection(oppositeDirection)) {
+        if (beforeLastPosition.hasAvailableNextPositionToDirection(oppositeDirection)) {
             reversedPositions.add(beforeLastPosition.getNextPosition(oppositeDirection));
         }
         return new Route(oppositeDirection, reversedPositions);

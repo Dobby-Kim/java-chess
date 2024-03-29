@@ -56,7 +56,7 @@ public final class Pawn extends Role {
     }
 
     private void singleShift(Direction direction, Position source, List<Position> sequentialPositions) {
-        if (source.hasAvailableNextPostitionToDirection(direction)) {
+        if (source.hasAvailableNextPositionToDirection(direction)) {
             source = source.getNextPosition(direction);
             sequentialPositions.add(source);
         }
