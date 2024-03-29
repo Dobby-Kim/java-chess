@@ -17,7 +17,9 @@ import static util.Rank.THREE;
 import static util.Rank.TWO;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import model.direction.Direction;
 import model.piece.Color;
 import model.piece.PieceHolder;
 import model.piece.role.Bishop;
@@ -26,6 +28,7 @@ import model.piece.role.Pawn;
 import model.piece.role.Rook;
 import model.piece.role.Square;
 import model.position.Position;
+import model.position.Route;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,6 +76,16 @@ class CurrentTurnTest {
                 .getRole());
     }
 
+    /**
+     * ....K... -> ....K...
+     * ....R... -> ....R...
+     * ........ -> ........
+     * ........ -> ........
+     * ........ -> ........
+     * ........ -> ........
+     * ....r... -> .....r..
+     * ....k... -> ....k... <- k checked by R
+     */
     @Test
     @DisplayName("이동 후 자신의 킹이 체크 상태인 경우 예외를 던진다.")
     void move_ShouldRollback_WhenSelfInCheckAfterMove() {
@@ -100,6 +113,16 @@ class CurrentTurnTest {
         assertEquals(Color.BLACK, nextState.currentColor);
     }
 
+    /**
+     * ....K...
+     * ........
+     * ........
+     * ........
+     * ........
+     * ........
+     * ....r...
+     * ....k...
+     */
     @Test
     @DisplayName("isCheckedBy_적이 킹을 체크하고 있을 때 true 반환")
     void isCheckedBy_ShouldReturnTrue_WhenEnemyChecksKing() {
@@ -123,6 +146,36 @@ class CurrentTurnTest {
         DefaultState nextState = currentTurn.nextState();
 
         assertNotEquals(currentTurn.currentColor, nextState.currentColor);
+    }
+
+    /**
+     * ....K...
+     * ....*...
+     * ....*...
+     * ....*...
+     * ....*...
+     * ....*...
+     * ....r...
+     * ....k...
+     */
+    @Test
+    @DisplayName("현재 체크를 하고 있는 현재 턴의 하나의 기물의 공격 Route를 구한다.")
+    void findAttackRoute_ShouldReturnAttackRoute_WhenIsCheck() {
+        Position source = Position.of(5, 2);
+        PieceHolder rookAttackingBlackKing = new PieceHolder(Rook.from(Color.WHITE));
+
+        chessBoard.put(source, rookAttackingBlackKing);
+        List<Route> expectedRoutes = List.of(new Route(Direction.S, List.of(
+                Position.of(5, 7),
+                Position.of(5, 6),
+                Position.of(5, 5),
+                Position.of(5, 4),
+                Position.of(5, 3),
+                Position.of(5, 2)
+                )));
+        List<Route> attackRoutes = currentTurn.findAttackRoutes();
+
+        assertEquals(expectedRoutes, attackRoutes);
     }
 
     private void initBoard() {

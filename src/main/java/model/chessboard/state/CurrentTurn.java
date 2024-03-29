@@ -22,7 +22,8 @@ public class CurrentTurn extends DefaultState {
         Route route = sourcePieceHolder.findRoute(source, destination);
         runMove(sourcePieceHolder, route);
         if (isCheckedBy(currentColor)) {
-            return new Checked(chessBoard, currentColor.opponent(), route.reverseRouteTowardSource());
+            List<Route> attackRoute = findAttackRoutes();
+            return new Checked(chessBoard, currentColor.opponent(), attackRoute);
         }
         return this;
     }
@@ -36,8 +37,8 @@ public class CurrentTurn extends DefaultState {
         }
     }
 
-    private void checkTurn(PieceHolder selectedPieceHolderColor) {
-        if (!selectedPieceHolderColor.hasSameColor(this.currentColor)) {
+    private void checkTurn(PieceHolder selectedPieceHolder) {
+        if (!selectedPieceHolder.hasSameColor(this.currentColor)) {
             throw new IllegalArgumentException(currentColor.name() + " 진영의 기물을 움직여야 합니다.");
         }
     }
@@ -45,8 +46,8 @@ public class CurrentTurn extends DefaultState {
     @Override
     protected boolean isCheckedBy(Color attackingColor) {
         Position kingPosition = findKingPosition(attackingColor.opponent());
-        Set<Entry<Position, PieceHolder>> currentTurnPieces = findPieceHoldersByColor(attackingColor);
-        return currentTurnPieces.stream()
+        Set<Entry<Position, PieceHolder>> targetColorPieces = findPieceHoldersByColor(attackingColor);
+        return targetColorPieces.stream()
                 .anyMatch(positionPieceHolderEntry -> isReachablePosition(positionPieceHolderEntry, kingPosition));
     }
 
@@ -67,13 +68,12 @@ public class CurrentTurn extends DefaultState {
                 .orElseThrow(() -> new IllegalStateException("찾고자 하는 King이 존재하지 않습니다."));
     }
 
-    protected boolean isReachablePosition(Entry<Position, PieceHolder> positionPieceEntry,
-                                        Position targetPosition) {
+    protected boolean isReachablePosition(Entry<Position, PieceHolder> positionPieceEntry, Position targetPosition) {
         Position currentPosition = positionPieceEntry.getKey();
         PieceHolder currentPieceHolder = positionPieceEntry.getValue();
         try {
-            Route routeToKing = currentPieceHolder.findRoute(currentPosition, targetPosition);
-            return currentPieceHolder.checkPieceHoldersOnMovingRoute(pieceHoldersInRoute(routeToKing));
+            Route routeToTarget = currentPieceHolder.findRoute(currentPosition, targetPosition);
+            return currentPieceHolder.checkPieceHoldersOnMovingRoute(pieceHoldersInRoute(routeToTarget));
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -83,6 +83,16 @@ public class CurrentTurn extends DefaultState {
         return route.getPositions()
                 .stream()
                 .map(chessBoard::get)
+                .toList();
+    }
+
+    protected List<Route> findAttackRoutes() {
+        Position checkedKingPosition = findKingPosition(currentColor.opponent());
+        return findPieceHoldersByColor(currentColor).stream()
+                .filter(pieceHolder -> isReachablePosition(pieceHolder, checkedKingPosition))
+                .map(attackingPieceHolder -> attackingPieceHolder.getValue()
+                        .findRoute(attackingPieceHolder.getKey(), checkedKingPosition)
+                        .reverseRouteTowardSource())
                 .toList();
     }
 
