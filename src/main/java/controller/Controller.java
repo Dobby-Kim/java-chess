@@ -35,12 +35,12 @@ public class Controller {
         List<String> inputCommand = InputView.parseCommand();
         GameCommand gameCommand = inputRetryHelper(() -> GameCommand.from(inputCommand));
         if (gameCommand == GameCommand.MOVE) {
-            controlChessBoard(chessBoard, inputCommand);
+            executeMoveCommand(chessBoard, inputCommand);
         }
         return gameCommand;
     }
 
-    private void controlChessBoard(ChessBoard chessBoard, List<String> inputCommand) {
+    private void executeMoveCommand(ChessBoard chessBoard, List<String> inputCommand) {
         Position source = generateSourcePosition(inputCommand);
         Position destination = generateDestinationPosition(inputCommand);
         chessBoard.move(source, destination);
