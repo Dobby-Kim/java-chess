@@ -36,10 +36,6 @@ public enum ShiftPattern {
         this.directions = directions;
     }
 
-    public boolean contains(Direction direction) {
-        return directions.contains(direction);
-    }
-
     public List<Direction> directions() {
         return Collections.unmodifiableList(directions);
     }
