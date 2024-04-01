@@ -6,7 +6,10 @@ import util.File;
 import util.Rank;
 
 public enum GameCommand {
-    START("start"), END("end"), MOVE("move");
+    START("start"),
+    END("end"),
+    MOVE("move"),
+    STATUS("status");
 
     public static final int SOURCE = 1;
     public static final int FILE_INDEX = 0;
@@ -24,6 +27,10 @@ public enum GameCommand {
                 .filter(gameCommand -> gameCommand.command.equals(command))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("입력하신 Command가 없습니다."));
+    }
+
+    public boolean isEnd() {
+        return this == END;
     }
 
     public static int toSourceFileValue(List<String> inputCommand) {
