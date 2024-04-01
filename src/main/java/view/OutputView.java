@@ -56,7 +56,10 @@ public class OutputView {
         System.out.println();
     }
 
-    public static void printScore(Score score) {
+    public static void printScore(Score score, boolean isCheckMate) {
+        if (isCheckMate) {
+            System.out.println(score.winner() + "이 체크메이트로 승리하였습니다.");
+        }
         System.out.println("> 현재 점수 <");
         System.out.println("White 진영 점수: " + score.whiteScore());
         System.out.println("Black 진영 점수: " + score.blackScore());

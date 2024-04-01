@@ -25,16 +25,20 @@ public class Controller {
             gameCommand = inputRetryHelper(() -> runGame(chessBoard));
             showCurrentStatus(gameCommand, chessBoard);
         }
+        showFianalStatus(chessBoard);
+    }
+
+    private void showFianalStatus(ChessBoard chessBoard) {
         List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
         printChessBoard(pieceInfos);
         Score currentScore = chessBoard.aggregateScore();
-        OutputView.printScore(currentScore);
+        OutputView.printScore(currentScore, chessBoard.isFinish());
     }
 
     private void showCurrentStatus(GameCommand gameCommand, ChessBoard chessBoard) {
         if (gameCommand == GameCommand.STATUS) {
             Score currentScore = chessBoard.aggregateScore();
-            OutputView.printScore(currentScore);
+            OutputView.printScore(currentScore, false);
         }
     }
 
