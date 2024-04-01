@@ -10,8 +10,12 @@ import model.position.Position;
 public class ChessBoard {
     private DefaultState currentState;
 
-    public ChessBoard() {
-        currentState = new CurrentTurn(ChessBoardFactory.create(), Color.WHITE);
+    public ChessBoard(FenCommand fenCommand) {
+        if (fenCommand.isInitial()){
+            this.currentState = new CurrentTurn(ChessBoardFactory.initialBoard(), Color.WHITE);
+            return;
+        }
+        this.currentState = new CurrentTurn(ChessBoardFactory.loadBoard(fenCommand.fen()), Color.WHITE);
     }
 
     public void move(Position source, Position destination) {

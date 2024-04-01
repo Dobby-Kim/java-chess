@@ -10,7 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class ChessBoardTest {
-    private final ChessBoard chessBoard = new ChessBoard();
+    private final ChessBoard chessBoard = new ChessBoard(new FenCommand(" ", true));
 
     @Test
     @DisplayName("특정 위치에 존재하는 이동 가능한 Pawn을 이동할 때에는 예외를 던지지 않는다.")

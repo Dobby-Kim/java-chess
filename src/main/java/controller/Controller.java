@@ -6,8 +6,11 @@ import static view.OutputView.printInitialGamePrompt;
 
 import java.util.List;
 import model.chessboard.ChessBoard;
+import model.chessboard.ChessBoardFenConverter;
+import model.chessboard.FenCommand;
 import model.chessboard.Score;
 import model.position.Position;
+import repository.UserDao;
 import view.GameCommand;
 import view.InputView;
 import view.OutputView;
@@ -15,10 +18,12 @@ import view.dto.InfoMapper;
 import view.dto.PieceInfo;
 
 public class Controller {
+    private final UserDao userDao = new UserDao();
 
     public void execute() {
+        userDao.initializeDatabase();
         GameCommand gameCommand = executeInitial();
-        ChessBoard chessBoard = new ChessBoard();
+        ChessBoard chessBoard = createChessBoard();
         while (!gameCommand.isEnd() && !chessBoard.isFinish()) {
             List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
             printChessBoard(pieceInfos);
@@ -28,11 +33,24 @@ public class Controller {
         showFianalStatus(chessBoard);
     }
 
+    private ChessBoard createChessBoard() {
+        if (userDao.isTableExists()) {
+            return new ChessBoard(new FenCommand(userDao.loadFenValues(), false));
+        }
+        return new ChessBoard(new FenCommand("", true));
+    }
+
+    private GameCommand executeInitial() {
+        printInitialGamePrompt();
+        return inputRetryHelper(InputView::inputInitialGameCommand);
+    }
+
     private void showFianalStatus(ChessBoard chessBoard) {
         List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
         printChessBoard(pieceInfos);
         Score currentScore = chessBoard.aggregateScore();
         OutputView.printScore(currentScore, chessBoard.isFinish());
+        userDao.updateFen(ChessBoardFenConverter.toFEN(chessBoard.getChessBoard()));
     }
 
     private void showCurrentStatus(GameCommand gameCommand, ChessBoard chessBoard) {
@@ -40,11 +58,6 @@ public class Controller {
             Score currentScore = chessBoard.aggregateScore();
             OutputView.printScore(currentScore, false);
         }
-    }
-
-    private GameCommand executeInitial() {
-        printInitialGamePrompt();
-        return inputRetryHelper(InputView::inputInitialGameCommand);
     }
 
     private GameCommand runGame(ChessBoard chessBoard) {

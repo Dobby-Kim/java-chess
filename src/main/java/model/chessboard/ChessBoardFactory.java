@@ -23,7 +23,7 @@ public class ChessBoardFactory {
     private ChessBoardFactory() {
     }
 
-    public static Map<Position, PieceHolder> create() {
+    public static Map<Position, PieceHolder> initialBoard() {
         initRook();
         initKnight();
         initBishop();
@@ -31,6 +31,10 @@ public class ChessBoardFactory {
         initPawn();
         initSquare();
         return chessBoard;
+    }
+
+    public static Map<Position, PieceHolder> loadBoard(String fen) {
+        return ChessBoardFenConverter.fromFEN(fen);
     }
 
     private static void initRook() {
