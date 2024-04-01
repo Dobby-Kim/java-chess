@@ -2,6 +2,7 @@ package view;
 
 import java.util.Arrays;
 import java.util.List;
+import model.chessboard.Score;
 import view.dto.PieceInfo;
 
 public class OutputView {
@@ -18,6 +19,7 @@ public class OutputView {
         System.out.println("> 게임 시작 : start");
         System.out.println("> 게임 종료 : end");
         System.out.println("> 게임 이동 : move source위치 target위치 - 예. move b2 b3");
+        System.out.println("> 현재 점수 출력 : status");
     }
 
     public static void printChessBoard(List<PieceInfo> pieceInfos) {
@@ -52,5 +54,12 @@ public class OutputView {
                 .map(String::valueOf)
                 .forEach(System.out::println);
         System.out.println();
+    }
+
+    public static void printScore(Score score) {
+        System.out.println("> 현재 점수 <");
+        System.out.println("White 진영 점수: " + score.whiteScore());
+        System.out.println("Black 진영 점수: " + score.blackScore());
+        System.out.println("현재 승: " + score.winner());
     }
 }
