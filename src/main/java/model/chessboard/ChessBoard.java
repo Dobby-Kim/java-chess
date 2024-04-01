@@ -27,6 +27,12 @@ public class ChessBoard {
         return currentState.isFinish();
     }
 
+    public Score aggregateScore() {
+        double whiteScore = this.currentState.score(Color.WHITE);
+        double blackScore = this.currentState.score(Color.BLACK);
+        return new Score(whiteScore, blackScore, currentState.winner());
+    }
+
     public Map<Position, PieceHolder> getChessBoard() {
         return currentState.getChessBoard();
     }

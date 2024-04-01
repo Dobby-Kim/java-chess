@@ -63,6 +63,10 @@ public class PieceHolder {
         return this.role.isSameColor(color);
     }
 
+    public double score(boolean hasPawn) {
+        return this.role.score(hasPawn);
+    }
+
     public Role getRole() {
         return role;
     }

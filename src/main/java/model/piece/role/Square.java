@@ -8,7 +8,7 @@ import model.position.Route;
 
 public final class Square extends Role {
     public Square() {
-        super(Color.UN_COLORED, ShiftPattern.NONE);
+        super(Color.NEUTRAL, ShiftPattern.NONE);
     }
 
     @Override
@@ -19,5 +19,10 @@ public final class Square extends Role {
     @Override
     public boolean isOccupied() {
         return false;
+    }
+
+    @Override
+    public double score(boolean hasPawnInFile) {
+        return SCORE;
     }
 }

@@ -10,6 +10,8 @@ import model.position.Position;
 import model.position.Route;
 
 public abstract class Role {
+    protected static final double SCORE = 0;
+
     protected final Color color;
     private final ShiftPattern shiftPattern;
 
@@ -60,6 +62,8 @@ public abstract class Role {
     public boolean isKing() {
         return false;
     }
+
+    public abstract double score(boolean hasPawnInFile);
 
     public Color getColor() {
         return color;

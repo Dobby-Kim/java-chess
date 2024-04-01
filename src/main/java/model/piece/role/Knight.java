@@ -4,11 +4,18 @@ import model.direction.ShiftPattern;
 import model.piece.Color;
 
 public final class Knight extends SingleShiftRole {
+    private static final double SCORE = 2.5;
+
     private Knight(Color color) {
         super(color, ShiftPattern.KNIGHT_PATTERN);
     }
 
     public static Knight from(Color color) {
         return new Knight(color);
+    }
+
+    @Override
+    public double score(boolean hasPawnInFile) {
+        return SCORE;
     }
 }

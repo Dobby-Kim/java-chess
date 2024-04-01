@@ -1,5 +1,6 @@
 package model.chessboard.state;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,14 +23,14 @@ public class CurrentTurn extends DefaultState {
         Route route = sourcePieceHolder.findRoute(source, destination);
         runMove(sourcePieceHolder, route);
         if (isCheckedBy(currentColor)) {
-            List<Route> attackRoute = findAttackRoutes();
-            return new Checked(chessBoard, currentColor.opponent(), attackRoute);
+            List<Route> attackRoutes = findAttackRoutes();
+            return new Checked(chessBoard, currentColor.opponent(), attackRoutes);
         }
         return this;
     }
 
     protected void runMove(PieceHolder sourcePieceHolder, Route route) {
-        Map<Position, PieceHolder> chessBoardBackUp = Map.copyOf(chessBoard);
+        Map<Position, PieceHolder> chessBoardBackUp = new HashMap<>(chessBoard);
         sourcePieceHolder.progressMoveToDestination(pieceHoldersInRoute(route));
         if (isCheckedBy(currentColor.opponent())) {
             chessBoard = chessBoardBackUp;
@@ -94,6 +95,19 @@ public class CurrentTurn extends DefaultState {
                         .findRoute(attackingPieceHolder.getKey(), checkedKingPosition)
                         .reverseRouteTowardSource())
                 .toList();
+    }
+
+    @Override
+    public final Color winner() {
+        double whiteScore = score(Color.WHITE);
+        double blackScore = score(Color.BLACK);
+        if (whiteScore > blackScore) {
+            return Color.WHITE;
+        }
+        if (whiteScore < blackScore) {
+            return Color.BLACK;
+        }
+        return Color.NEUTRAL;
     }
 
     @Override

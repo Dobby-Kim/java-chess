@@ -14,6 +14,8 @@ import model.position.Route;
 public final class Pawn extends Role {
     private static final int INITIAL_WHITE_PAWN_RANK = 2;
     private static final int INITIAL_BLACK_PAWN_RANK = 7;
+    private static final double SCORE = 1;
+
     private boolean isTryToTake;
 
     private Pawn(Color color, ShiftPattern shiftPattern) {
@@ -80,5 +82,13 @@ public final class Pawn extends Role {
             throw new IllegalArgumentException("해당 Pawn이 이동할 수 없는 좌표입니다");
         }
         isTryToTake = false;
+    }
+
+    @Override
+    public double score(boolean hasPawnInFile) {
+        if (hasPawnInFile) {
+            return SCORE / 2;
+        }
+        return SCORE;
     }
 }
