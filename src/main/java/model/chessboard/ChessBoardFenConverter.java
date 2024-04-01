@@ -2,6 +2,14 @@ package model.chessboard;
 
 import static model.piece.Color.BLACK;
 import static model.piece.Color.WHITE;
+import static util.Rank.EIGHT;
+import static util.Rank.FIVE;
+import static util.Rank.FOUR;
+import static util.Rank.ONE;
+import static util.Rank.SEVEN;
+import static util.Rank.SIX;
+import static util.Rank.THREE;
+import static util.Rank.TWO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +27,10 @@ import model.position.Position;
 import view.ChessSymbol;
 
 public class ChessBoardFenConverter {
+
+    private ChessBoardFenConverter() {
+    }
+
     public static String toFEN(Map<Position, PieceHolder> board) {
         StringBuilder fen = new StringBuilder();
         for (int rank = 8; rank >= 1; rank--) {
@@ -71,21 +83,22 @@ public class ChessBoardFenConverter {
 
     public static Map<Position, PieceHolder> fromFEN(String fen) {
         Map<Position, PieceHolder> chessBoard = new HashMap<>();
+        cleanBoard(chessBoard);
         String[] rows = fen.split("/");
-        for (int rank = 0; rank < rows.length; rank++) {
-            parseRow(chessBoard, rows[rank], rank);
+        for (int rank = 1; rank <= rows.length; rank++) {
+            parseRow(chessBoard, rows[rank - 1], rank);
         }
         return chessBoard;
     }
 
     private static void parseRow(Map<Position, PieceHolder> chessBoard, String row, int rank) {
-        int file = 0;
+        int file = 1;
         for (char piece : row.toCharArray()) {
             if (Character.isDigit(piece)) {
                 file += Character.getNumericValue(piece);
                 continue;
             }
-            Position position = Position.of(file + 1, 8 - rank);
+            Position position = Position.of(file, 9 - rank);
             chessBoard.put(position, createPieceHolder(piece));
             file++;
         }
@@ -116,6 +129,19 @@ public class ChessBoardFenConverter {
             case 'k' -> King.from(color);
             default -> new Square();
         };
+    }
+
+    private static void cleanBoard(Map<Position, PieceHolder> chessBoard) {
+        for (int i = 1; i <= 8; i++) {
+            chessBoard.put(Position.of(i, ONE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, TWO.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, THREE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, FOUR.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, FIVE.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, SIX.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, SEVEN.value()), new PieceHolder(new Square()));
+            chessBoard.put(Position.of(i, EIGHT.value()), new PieceHolder(new Square()));
+        }
     }
 }
 

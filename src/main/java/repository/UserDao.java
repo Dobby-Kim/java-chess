@@ -41,18 +41,8 @@ public final class UserDao {
         }
     }
 
-    public boolean isTableExists() {
-        final String CHECK_TABLE_EXIST_QUERY =
-                "SELECT * FROM information_schema.tables WHERE table_schema = '" + DATABASE
-                        + "' AND table_name = 'fen' LIMIT 1;";
-        Connection connection = getConnection();
-        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(
-                CHECK_TABLE_EXIST_QUERY)) {
-            return resultSet.next();
-        } catch (SQLException e) {
-            System.err.println("Error checking if table exists: " + e.getMessage());
-            return false;
-        }
+    public boolean isInitialGame() {
+        return "initial_fen_value".equals(loadFenValues());
     }
 
     public void updateFen(final String fen) {

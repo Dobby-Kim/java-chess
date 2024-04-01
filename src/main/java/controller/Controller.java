@@ -21,9 +21,9 @@ public class Controller {
     private final UserDao userDao = new UserDao();
 
     public void execute() {
-        userDao.initializeDatabase();
         GameCommand gameCommand = executeInitial();
-        ChessBoard chessBoard = createChessBoard();
+        userDao.initializeDatabase();
+        ChessBoard chessBoard = new ChessBoard(new FenCommand(userDao.loadFenValues(), userDao.isInitialGame()));
         while (!gameCommand.isEnd() && !chessBoard.isFinish()) {
             List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
             printChessBoard(pieceInfos);
@@ -31,13 +31,6 @@ public class Controller {
             showCurrentStatus(gameCommand, chessBoard);
         }
         showFianalStatus(chessBoard);
-    }
-
-    private ChessBoard createChessBoard() {
-        if (userDao.isTableExists()) {
-            return new ChessBoard(new FenCommand(userDao.loadFenValues(), false));
-        }
-        return new ChessBoard(new FenCommand("", true));
     }
 
     private GameCommand executeInitial() {
