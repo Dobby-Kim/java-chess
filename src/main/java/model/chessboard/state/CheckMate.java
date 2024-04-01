@@ -31,7 +31,7 @@ public final class CheckMate extends DefaultState {
     }
 
     @Override
-    public final Color winner() {
+    public Color winner() {
         return currentColor.opponent();
     }
 }
