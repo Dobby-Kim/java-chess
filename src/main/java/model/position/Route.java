@@ -36,6 +36,10 @@ public class Route {
         return new Route(oppositeDirection, reversedPositions);
     }
 
+    public boolean isValidRoute() {
+        return !positions.isEmpty();
+    }
+
     public Direction getDirection() {
         return direction;
     }

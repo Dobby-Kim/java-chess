@@ -6,6 +6,7 @@ import static util.Rank.EIGHT;
 import static util.Rank.ONE;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import model.direction.Direction;
@@ -52,6 +53,12 @@ public class Position {
 
     private static boolean isLegalFileRank(int file, int rank) {
         return File.validate(file) && Rank.validate(rank);
+    }
+
+    public static List<Position> inFile(int file) {
+        return cache.stream()
+                .filter(position -> position.file == file)
+                .toList();
     }
 
     public Position getNextPosition(Direction direction) {
