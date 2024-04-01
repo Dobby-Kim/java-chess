@@ -26,7 +26,7 @@ class ColorTest {
     @Test
     @DisplayName("색깔이 없을 때에는 WHITE을 반환한다.")
     void next_ShouldReturnBlack_WhenUnColored() {
-        Color color = Color.UN_COLORED;
+        Color color = Color.NEUTRAL;
         Color nextColor = color.opponent();
         assertEquals(Color.WHITE, nextColor);
     }
