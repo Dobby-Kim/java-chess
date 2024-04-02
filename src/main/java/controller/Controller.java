@@ -30,7 +30,7 @@ public class Controller {
             gameCommand = inputRetryHelper(() -> runGame(chessBoard));
             showCurrentStatus(gameCommand, chessBoard);
         }
-        showFianalStatus(chessBoard);
+        showFinalStatus(chessBoard);
     }
 
     private GameCommand executeInitial() {
@@ -38,7 +38,7 @@ public class Controller {
         return inputRetryHelper(InputView::inputInitialGameCommand);
     }
 
-    private void showFianalStatus(ChessBoard chessBoard) {
+    private void showFinalStatus(ChessBoard chessBoard) {
         List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
         printChessBoard(pieceInfos);
         Score currentScore = chessBoard.aggregateScore();
