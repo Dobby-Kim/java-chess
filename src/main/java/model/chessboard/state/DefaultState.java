@@ -58,4 +58,8 @@ public abstract class DefaultState {
     public Map<Position, PieceHolder> getChessBoard() {
         return Map.copyOf(chessBoard);
     }
+
+    public Color getCurrentColor() {
+        return currentColor;
+    }
 }
