@@ -11,11 +11,13 @@ public class ChessBoard {
     private DefaultState currentState;
 
     public ChessBoard(FenCommand fenCommand) {
-        if (fenCommand.isInitial()){
+        if (fenCommand.isInitial()) {
             this.currentState = new CurrentTurn(ChessBoardFactory.initialBoard(), Color.WHITE);
             return;
         }
-        this.currentState = new CurrentTurn(ChessBoardFactory.loadBoard(fenCommand.fen()), Color.WHITE);
+        String savedFen = fenCommand.fen();
+        this.currentState = new CurrentTurn(ChessBoardFactory.loadBoard(savedFen),
+                ChessBoardFenConverter.colorFromFEN(savedFen));
     }
 
     public void move(Position source, Position destination) {
@@ -38,6 +40,10 @@ public class ChessBoard {
     }
 
     public Map<Position, PieceHolder> getChessBoard() {
-        return currentState.getChessBoard();
+        return this.currentState.getChessBoard();
+    }
+
+    public Color getCurrentColor() {
+        return this.currentState.getCurrentColor();
     }
 }

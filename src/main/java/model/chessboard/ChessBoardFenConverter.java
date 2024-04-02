@@ -39,6 +39,19 @@ public class ChessBoardFenConverter {
         return fen.toString();
     }
 
+    public static String toFEN(ChessBoard chessBoard) {
+        Map<Position, PieceHolder> board = chessBoard.getChessBoard();
+        StringBuilder fen = new StringBuilder();
+        for (int rank = 8; rank >= 1; rank--) {
+            convertRank(board, rank, fen);
+        }
+        Color currentTurn = chessBoard.getCurrentColor();
+        if (currentTurn == WHITE) {
+            return fen.append(" w").toString();
+        }
+        return fen.append(" b").toString();
+    }
+
     private static void convertRank(Map<Position, PieceHolder> chessBoard, int rank, StringBuilder fen) {
         int emptyCount = 0;
         for (int file = 1; file <= 8; file++) {
@@ -84,7 +97,7 @@ public class ChessBoardFenConverter {
     public static Map<Position, PieceHolder> fromFEN(String fen) {
         Map<Position, PieceHolder> chessBoard = new HashMap<>();
         cleanBoard(chessBoard);
-        String[] rows = fen.split("/");
+        String[] rows = fen.split(" ")[0].split("/");
         for (int rank = 1; rank <= rows.length; rank++) {
             parseRow(chessBoard, rows[rank - 1], rank);
         }
@@ -129,6 +142,14 @@ public class ChessBoardFenConverter {
             case 'k' -> King.from(color);
             default -> new Square();
         };
+    }
+
+    public static Color colorFromFEN(String fen) {
+        String turn = fen.split(" ")[1];
+        if ("w".equals(turn)) {
+            return WHITE;
+        }
+        return BLACK;
     }
 
     private static void cleanBoard(Map<Position, PieceHolder> chessBoard) {
