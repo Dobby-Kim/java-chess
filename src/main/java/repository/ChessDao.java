@@ -55,7 +55,7 @@ public final class ChessDao {
             preparedStatement.setString(1, fen);
             preparedStatement.executeUpdate();
         } catch (final SQLException e) {
-            throw new RuntimeException("Error updating FEN: " + e.getMessage(), e);
+            throw new RuntimeException("FEN 정보 업데이트 실패: " + e.getMessage(), e);
         }
     }
 
@@ -63,13 +63,11 @@ public final class ChessDao {
         final String query = "SELECT fen_value FROM fen ORDER BY id DESC LIMIT 1;";
         try (Connection connection = getConnection(); Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(
                 query)) {
-            if (resultSet.next()) {
-                return resultSet.getString("fen_value");
-            }
+            resultSet.next();
+            return resultSet.getString("fen_value");
         } catch (SQLException e) {
-            throw new RuntimeException("Error loading FEN value: " + e.getMessage(), e);
+            throw new RuntimeException("FEN 정보 읽어오기 실패: " + e.getMessage(), e);
         }
-        return null;
     }
 
     public void initFen() {
