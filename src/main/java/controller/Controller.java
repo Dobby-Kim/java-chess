@@ -10,7 +10,7 @@ import model.chessboard.ChessBoardFenConverter;
 import model.chessboard.FenCommand;
 import model.chessboard.Score;
 import model.position.Position;
-import repository.UserDao;
+import repository.ChessDao;
 import view.GameCommand;
 import view.InputView;
 import view.OutputView;
@@ -18,19 +18,19 @@ import view.dto.InfoMapper;
 import view.dto.PieceInfo;
 
 public class Controller {
-    private final UserDao userDao = new UserDao();
+    private final ChessDao chessDao = new ChessDao();
 
     public void execute() {
         GameCommand gameCommand = executeInitial();
-        userDao.initializeDatabase();
-        ChessBoard chessBoard = new ChessBoard(new FenCommand(userDao.loadFenValues(), userDao.isInitialGame()));
+        chessDao.ensureDatabaseInitialized();
+        ChessBoard chessBoard = new ChessBoard(new FenCommand(chessDao.loadFenValue(), chessDao.isInitialGame()));
         while (!gameCommand.isEnd() && !chessBoard.isFinish()) {
             List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
             printChessBoard(pieceInfos);
             gameCommand = inputRetryHelper(() -> runGame(chessBoard));
             showCurrentStatus(gameCommand, chessBoard);
         }
-        showFinalStatus(chessBoard);
+        processFinalStatus(chessBoard);
     }
 
     private GameCommand executeInitial() {
@@ -38,12 +38,16 @@ public class Controller {
         return inputRetryHelper(InputView::inputInitialGameCommand);
     }
 
-    private void showFinalStatus(ChessBoard chessBoard) {
+    private void processFinalStatus(ChessBoard chessBoard) {
         List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
         printChessBoard(pieceInfos);
         Score currentScore = chessBoard.aggregateScore();
         OutputView.printScore(currentScore, chessBoard.isFinish());
-        userDao.updateFen(ChessBoardFenConverter.toFEN(chessBoard.getChessBoard()));
+        if (chessBoard.isFinish()) {
+            chessDao.initFen();
+            return;
+        }
+        chessDao.updateFen(ChessBoardFenConverter.toFEN(chessBoard.getChessBoard()));
     }
 
     private void showCurrentStatus(GameCommand gameCommand, ChessBoard chessBoard) {
