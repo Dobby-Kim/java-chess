@@ -22,6 +22,10 @@ public class OutputView {
         System.out.println("> 현재 점수 출력 : status");
     }
 
+    public static void printSavedGameExistPrompt() {
+        System.out.println("[알림] 저장된 게임이 존재하여 'start'를 입력하면 해당 게임을 재개합니다.");
+    }
+
     public static void printChessBoard(List<PieceInfo> pieceInfos) {
         initializeChessBoard();
         pieceInfos.forEach(OutputView::placePieceOnBoard);

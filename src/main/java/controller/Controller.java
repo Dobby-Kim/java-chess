@@ -35,6 +35,9 @@ public class Controller {
 
     private GameCommand executeInitial() {
         printInitialGamePrompt();
+        if (!chessDao.isInitialGame()) {
+            OutputView.printSavedGameExistPrompt();
+        }
         return inputRetryHelper(InputView::inputInitialGameCommand);
     }
 
@@ -47,7 +50,7 @@ public class Controller {
             chessDao.initFen();
             return;
         }
-        chessDao.updateFen(ChessBoardFenConverter.toFEN(chessBoard.getChessBoard()));
+        chessDao.updateFen(ChessBoardFenConverter.toFEN(chessBoard));
     }
 
     private void showCurrentStatus(GameCommand gameCommand, ChessBoard chessBoard) {
