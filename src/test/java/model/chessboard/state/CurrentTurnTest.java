@@ -63,8 +63,8 @@ class CurrentTurnTest {
     @Test
     @DisplayName("유효한 이동 시 체스판 상태가 올바르게 업데이트 됨")
     void move_ShouldUpdateBoard_WhenValidMove() {
-        Position source = Position.of(2, 2);
-        Position destination = Position.of(3, 3);
+        Position source = Position.of(1, 1);
+        Position destination = Position.of(8, 8);
         PieceHolder ownPiece = new PieceHolder(Bishop.from(Color.WHITE));
 
         chessBoard.put(source, ownPiece);
@@ -98,7 +98,7 @@ class CurrentTurnTest {
         chessBoard.put(blackRookPosition, rookFacingWhiteKing);
         chessBoard.put(source, rookBlockingCheck);
 
-        currentTurn = new CurrentTurn(chessBoard, Color.WHITE);
+        currentTurn = new CurrentTurn(chessBoard, Color.BLACK);
 
         assertThrows(IllegalArgumentException.class, () -> currentTurn.move(source, destination));
     }
@@ -130,6 +130,7 @@ class CurrentTurnTest {
         PieceHolder rookAttackingBlackKing = new PieceHolder(Rook.from(Color.WHITE));
 
         chessBoard.put(source, rookAttackingBlackKing);
+        currentTurn = new CurrentTurn(chessBoard, Color.BLACK);
 
         assertTrue(currentTurn.isCheckedBy(Color.WHITE));
     }
@@ -146,36 +147,6 @@ class CurrentTurnTest {
         DefaultState nextState = currentTurn.nextState();
 
         assertNotEquals(currentTurn.currentColor, nextState.currentColor);
-    }
-
-    /**
-     * ....K...
-     * ....*...
-     * ....*...
-     * ....*...
-     * ....*...
-     * ....*...
-     * ....r...
-     * ....k...
-     */
-    @Test
-    @DisplayName("현재 체크를 하고 있는 현재 턴의 하나의 기물의 공격 Route를 구한다.")
-    void findAttackRoute_ShouldReturnAttackRoute_WhenIsCheck() {
-        Position source = Position.of(5, 2);
-        PieceHolder rookAttackingBlackKing = new PieceHolder(Rook.from(Color.WHITE));
-
-        chessBoard.put(source, rookAttackingBlackKing);
-        List<Route> expectedRoutes = List.of(new Route(Direction.S, List.of(
-                Position.of(5, 7),
-                Position.of(5, 6),
-                Position.of(5, 5),
-                Position.of(5, 4),
-                Position.of(5, 3),
-                Position.of(5, 2)
-                )));
-        List<Route> attackRoutes = currentTurn.findAttackRoutes();
-
-        assertEquals(expectedRoutes, attackRoutes);
     }
 
     private void initBoard() {

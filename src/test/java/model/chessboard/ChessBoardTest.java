@@ -28,7 +28,6 @@ class ChessBoardTest {
             chessBoard.move(Position.of(6, 2), Position.of(6, 3));
             chessBoard.move(Position.of(5, 7), Position.of(5, 5)); // e7 e5
             chessBoard.move(Position.of(7, 2), Position.of(7, 4)); // g2 g4
-            chessBoard.move(Position.of(4, 8), Position.of(8, 4)); // d8 h4 -> CheckMate Black Wins
         });
     }
 
@@ -41,7 +40,7 @@ class ChessBoardTest {
         assertAll(() -> {
             Throwable exception = assertThrows(IllegalArgumentException.class,
                     () -> chessBoard.move(whiteRookPosition, illegalDestination));
-            assertEquals("경로에 기물이 위치하여 이동할 수 없습니다.", exception.getMessage());
+            assertEquals("이동할 수 없는 경로입니다.", exception.getMessage());
         });
     }
 

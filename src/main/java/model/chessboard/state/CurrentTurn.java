@@ -1,6 +1,5 @@
 package model.chessboard.state;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,10 +17,8 @@ public class CurrentTurn extends DefaultState {
 
     @Override
     public DefaultState move(Position source, Position destination) {
-        PieceHolder sourcePieceHolder = chessBoard.get(source);
-        checkTurn(sourcePieceHolder);
-        Route route = sourcePieceHolder.findRoute(source, destination);
-        runMove(sourcePieceHolder, route);
+        checkTurn(source);
+        runMove(source, destination);
         if (isCheckedBy(currentColor)) {
             List<Route> attackRoutes = findAttackRoutes();
             return new Checked(chessBoard, currentColor.opponent(), attackRoutes);
@@ -29,58 +26,77 @@ public class CurrentTurn extends DefaultState {
         return this;
     }
 
-    protected void runMove(PieceHolder sourcePieceHolder, Route route) {
-        Map<Position, PieceHolder> chessBoardBackUp = new HashMap<>(chessBoard);
-        sourcePieceHolder.progressMoveToDestination(pieceHoldersInRoute(route));
-        if (isCheckedBy(currentColor.opponent())) {
-            chessBoard = chessBoardBackUp;
-            throw new IllegalArgumentException("해당 위치는 체크이므로 움직일 수 없습니다.");
+    private void checkTurn(Position sourcePosition) {
+        if (!chessBoard.get(sourcePosition)
+                .hasSameColor(this.currentColor)) {
+            throw new IllegalArgumentException(currentColor.name() + " 진영의 기물을 움직여야 합니다.");
         }
     }
 
-    private void checkTurn(PieceHolder selectedPieceHolder) {
-        if (!selectedPieceHolder.hasSameColor(this.currentColor)) {
-            throw new IllegalArgumentException(currentColor.name() + " 진영의 기물을 움직여야 합니다.");
+    protected void runMove(final Position sourcePosition, final Position destinationPosition) {
+        PieceHolder sourcePieceHolder = chessBoard.get(sourcePosition);
+        Route route = sourcePieceHolder.findRoute(sourcePosition, destinationPosition);
+        if (isMoveOccurCheck(sourcePosition, route)) {
+            throw new IllegalArgumentException("해당 위치는 체크이므로 움직일 수 없습니다.");
         }
+        chessBoard.get(sourcePosition)
+                .moveToDestination(pieceHoldersInRoute(route));
+    }
+
+    protected boolean isMoveOccurCheck(Position sourcePosition, Route route) {
+        Map<Position, PieceHolder> chessBoardBackUp = getChessBoardBackUp();
+        PieceHolder sourcePieceHolder = chessBoard.get(sourcePosition);
+        sourcePieceHolder.moveToDestination(pieceHoldersInRoute(route));
+        if (isCheckedBy(currentColor.opponent())) {
+            chessBoard = chessBoardBackUp;
+            return true;
+        }
+        chessBoard = chessBoardBackUp;
+        return false;
+    }
+
+    private Map<Position, PieceHolder> getChessBoardBackUp() {
+        return chessBoard.entrySet()
+                .stream()
+                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue()
+                        .copy()));
     }
 
     @Override
     protected boolean isCheckedBy(Color attackingColor) {
         Position kingPosition = findKingPosition(attackingColor.opponent());
-        Set<Entry<Position, PieceHolder>> targetColorPieces = findPieceHoldersByColor(attackingColor);
-        return targetColorPieces.stream()
+        Set<Position> attackingPosition = findPositionsByColor(attackingColor);
+        return attackingPosition.stream()
                 .anyMatch(positionPieceHolderEntry -> isReachablePosition(positionPieceHolderEntry, kingPosition));
     }
 
-    protected Set<Entry<Position, PieceHolder>> findPieceHoldersByColor(Color color) {
-        return chessBoard.entrySet()
+    protected Set<Position> findPositionsByColor(Color color) {
+        return chessBoard.keySet()
                 .stream()
-                .filter(positionPieceHolderEntry -> positionPieceHolderEntry.getValue()
+                .filter(position -> chessBoard.get(position)
                         .hasSameColor(color))
                 .collect(Collectors.toSet());
     }
 
-    protected Position findKingPosition(Color targetColor) {
-        return findPieceHoldersByColor(targetColor).stream()
-                .filter(positionPieceHolderEntry -> positionPieceHolderEntry.getValue()
+    private Position findKingPosition(Color targetColor) {
+        return findPositionsByColor(targetColor).stream()
+                .filter(position -> chessBoard.get(position)
                         .isKing())
                 .findFirst()
-                .map(Entry::getKey)
                 .orElseThrow(() -> new IllegalStateException("찾고자 하는 King이 존재하지 않습니다."));
     }
 
-    protected boolean isReachablePosition(Entry<Position, PieceHolder> positionPieceEntry, Position targetPosition) {
-        Position currentPosition = positionPieceEntry.getKey();
-        PieceHolder currentPieceHolder = positionPieceEntry.getValue();
+    protected boolean isReachablePosition(Position sourcePosition, Position targetPosition) {
+        PieceHolder currentPieceHolder = chessBoard.get(sourcePosition);
         try {
-            Route routeToTarget = currentPieceHolder.findRoute(currentPosition, targetPosition);
-            return currentPieceHolder.checkPieceHoldersOnMovingRoute(pieceHoldersInRoute(routeToTarget));
+            Route routeToTarget = currentPieceHolder.findRoute(sourcePosition, targetPosition);
+            return currentPieceHolder.canMoveThroughRoute(pieceHoldersInRoute(routeToTarget));
         } catch (IllegalArgumentException e) {
             return false;
         }
     }
 
-    protected List<PieceHolder> pieceHoldersInRoute(Route route) {
+    private List<PieceHolder> pieceHoldersInRoute(Route route) {
         return route.getPositions()
                 .stream()
                 .map(chessBoard::get)
@@ -89,10 +105,10 @@ public class CurrentTurn extends DefaultState {
 
     protected List<Route> findAttackRoutes() {
         Position checkedKingPosition = findKingPosition(currentColor.opponent());
-        return findPieceHoldersByColor(currentColor).stream()
-                .filter(pieceHolder -> isReachablePosition(pieceHolder, checkedKingPosition))
-                .map(attackingPieceHolder -> attackingPieceHolder.getValue()
-                        .findRoute(attackingPieceHolder.getKey(), checkedKingPosition)
+        return findPositionsByColor(currentColor).stream()
+                .filter(attackingPosition -> isReachablePosition(attackingPosition, checkedKingPosition))
+                .map(attackingPosition -> chessBoard.get(attackingPosition)
+                        .findRoute(attackingPosition, checkedKingPosition)
                         .reverseRouteTowardSource())
                 .toList();
     }

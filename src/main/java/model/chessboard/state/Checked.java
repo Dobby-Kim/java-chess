@@ -3,7 +3,6 @@ package model.chessboard.state;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import model.piece.Color;
 import model.piece.PieceHolder;
 import model.piece.role.King;
@@ -13,7 +12,7 @@ import model.position.Route;
 public final class Checked extends CurrentTurn {
     private final List<Position> checkedPositions;
 
-    protected Checked(Map<Position, PieceHolder> chessBoard, Color currentColor, List<Route> attackRoutes) {
+    Checked(Map<Position, PieceHolder> chessBoard, Color currentColor, List<Route> attackRoutes) {
         super(chessBoard, currentColor);
         this.checkedPositions = positionsInRoutes(attackRoutes);
     }
@@ -34,31 +33,26 @@ public final class Checked extends CurrentTurn {
     }
 
     private boolean canAvoidCheck() {
-        return findPieceHoldersByColor(currentColor).stream()
+        return findPositionsByColor(currentColor).stream()
                 .anyMatch(this::canBlockAttack);
     }
 
-    private boolean canBlockAttack(Entry<Position, PieceHolder> entry) {
-        Position currentPosition = entry.getKey();
-        PieceHolder currentPieceHolder = entry.getValue();
+    private boolean canBlockAttack(Position defensePosition) {
+        PieceHolder currentPieceHolder = chessBoard.get(defensePosition);
         if (currentPieceHolder.isKing()) {
-            return canKingEscapeCurrentPosition(entry);
+            return canKingEscapeCurrentPosition(defensePosition);
         }
         return checkedPositions.stream()
-                .filter(checkedPosition -> isReachablePosition(entry, checkedPosition) && !currentPieceHolder.isKing())
-                .map(destination -> currentPieceHolder.findRoute(currentPosition, destination))
-                .anyMatch(route -> !isCheckedBy(currentColor.opponent()));
+                .filter(checkedPosition -> isReachablePosition(defensePosition, checkedPosition))
+                .map(checkedPosition -> currentPieceHolder.findRoute(defensePosition, checkedPosition))
+                .anyMatch(blockRoute -> !isMoveOccurCheck(defensePosition, blockRoute));
     }
 
-    private boolean canKingEscapeCurrentPosition(Entry<Position, PieceHolder> entry) {
+    private boolean canKingEscapeCurrentPosition(Position kingPosition) {
         King currentKing = King.from(currentColor);
-        List<Position> availableKingPositions = currentKing.findAllAvailableRoutes(entry.getKey())
+        return currentKing.findAllAvailableRoutes(kingPosition)
                 .stream()
-                .map(Route::getPositions)
-                .flatMap(Collection::stream)
-                .toList();
-        return availableKingPositions.stream()
-                .filter(escapeRoute -> isReachablePosition(entry, escapeRoute))
-                .anyMatch(route -> !isCheckedBy(currentColor.opponent()));
+                .filter(Route::isValidRoute)
+                .noneMatch(route -> isMoveOccurCheck(kingPosition, route));
     }
 }
