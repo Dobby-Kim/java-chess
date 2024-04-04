@@ -21,8 +21,8 @@ public class Controller {
     private final ChessDao chessDao = new ChessDao();
 
     public void execute() {
-        GameCommand gameCommand = executeInitial();
         chessDao.ensureDatabaseInitialized();
+        GameCommand gameCommand = executeInitial();
         ChessBoard chessBoard = new ChessBoard(new FenCommand(chessDao.loadFenValue(), chessDao.isInitialGame()));
         while (!gameCommand.isEnd() && !chessBoard.isFinish()) {
             List<PieceInfo> pieceInfos = InfoMapper.toPieceInfoMapper(chessBoard);
