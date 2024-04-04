@@ -7,9 +7,9 @@ import static model.direction.Direction.S;
 import static model.direction.Direction.SE;
 import static model.direction.Direction.SW;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import model.piece.Color;
@@ -138,9 +138,8 @@ class PawnTest {
         List<Role> roles = List.of();
         Role destinationRole = new Square();
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            pawn.traversalRoles(roles, destinationRole);
-        });
+        assertFalse(pawn.canCapture(destinationRole));
+
     }
 
     @Test
@@ -156,9 +155,7 @@ class PawnTest {
         List<Role> roles = List.of();
         Role destinationRole = Pawn.from(Color.BLACK);
 
-        assertDoesNotThrow(() -> {
-            pawn.traversalRoles(roles, destinationRole);
-        });
+        assertTrue(pawn.canCapture(destinationRole));
     }
 
     @Test
@@ -174,9 +171,7 @@ class PawnTest {
         List<Role> roles = List.of();
         Role destinationRole = Pawn.from(Color.WHITE);
 
-        assertThrows(IllegalArgumentException.class, () -> {
-            pawn.traversalRoles(roles, destinationRole);
-        });
+        assertFalse(pawn.canCapture(destinationRole));
     }
 
     @Test
@@ -192,9 +187,7 @@ class PawnTest {
         List<Role> roles = List.of();
         Role destinationRole = new Square();
 
-        assertDoesNotThrow(() -> {
-            pawn.traversalRoles(roles, destinationRole);
-        });
+        assertTrue(pawn.canCapture(destinationRole));
     }
 
     @Test
@@ -210,9 +203,7 @@ class PawnTest {
         List<Role> roles = List.of(new Square());
         Role destinationRole = new Square();
 
-        assertDoesNotThrow(() -> {
-            pawn.traversalRoles(roles, destinationRole);
-        });
+        assertTrue(pawn.canCapture(destinationRole));
     }
 
     @Test
@@ -230,12 +221,8 @@ class PawnTest {
         Role whiteRoleIndestination = Pawn.from(Color.WHITE);
 
         assertAll(() -> {
-            assertThrows(IllegalArgumentException.class, () -> {
-                pawn.traversalRoles(roles, blackRoleIndestination);
-            });
-            assertThrows(IllegalArgumentException.class, () -> {
-                pawn.traversalRoles(roles, whiteRoleIndestination);
-            });
+            assertFalse(pawn.canCapture(blackRoleIndestination));
+            assertFalse(pawn.canCapture(whiteRoleIndestination));
         });
     }
 }
