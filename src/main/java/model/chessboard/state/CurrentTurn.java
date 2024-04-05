@@ -23,7 +23,7 @@ public class CurrentTurn extends DefaultState {
             List<Route> attackRoutes = findAttackRoutes();
             return new Checked(chessBoard, currentColor.opponent(), attackRoutes);
         }
-        return this;
+        return new CurrentTurn(chessBoard, currentColor.opponent());
     }
 
     private void checkTurn(Position sourcePosition) {
@@ -46,6 +46,9 @@ public class CurrentTurn extends DefaultState {
     protected boolean isMoveOccurCheck(Position sourcePosition, Route route) {
         Map<Position, PieceHolder> chessBoardBackUp = getChessBoardBackUp();
         PieceHolder sourcePieceHolder = chessBoard.get(sourcePosition);
+        if (!sourcePieceHolder.canMoveThroughRoute(pieceHoldersInRoute(route))) {
+            return false;
+        }
         sourcePieceHolder.moveToDestination(pieceHoldersInRoute(route));
         if (isCheckedBy(currentColor.opponent())) {
             chessBoard = chessBoardBackUp;
@@ -133,6 +136,6 @@ public class CurrentTurn extends DefaultState {
 
     @Override
     public DefaultState nextState() {
-        return new CurrentTurn(chessBoard, currentColor.opponent());
+        return this;
     }
 }

@@ -27,7 +27,7 @@ public final class Checked extends CurrentTurn {
     @Override
     public DefaultState nextState() {
         if (canAvoidCheck()) {
-            return new CurrentTurn(chessBoard, currentColor);
+            return this;
         }
         return new CheckMate(chessBoard, currentColor);
     }
