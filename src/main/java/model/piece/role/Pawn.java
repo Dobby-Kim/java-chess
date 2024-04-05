@@ -75,7 +75,7 @@ public final class Pawn extends Role {
 
     @Override
     public boolean canCapture(Role destinationRole) {
-        if (destinationRole.color == this.color || isTryToTake != destinationRole.isOccupied()) {
+        if (destinationRole.color != this.color.opponent() && isTryToTake != destinationRole.isOccupied()) {
             return false;
         }
         isTryToTake = false;
