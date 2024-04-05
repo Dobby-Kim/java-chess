@@ -23,29 +23,14 @@ public final class ChessDao {
         }
     }
 
-    public void ensureDatabaseInitialized() {
+    public boolean isInitialGame() {
         try (Connection connection = getConnection(); Statement statement = connection.createStatement()) {
-            statement.execute("USE chess;");
-            ensureInitialFenInserted(statement);
+            ResultSet resultSet = statement.executeQuery("SELECT fen_value FROM fen ORDER BY id LIMIT 1;");
+            resultSet.next();
+            return resultSet.getString("fen_value") == null;
         } catch (SQLException e) {
             throw new RuntimeException("DB 초기화 실패: " + e.getMessage(), e);
         }
-    }
-
-    private void ensureInitialFenInserted(Statement statement) throws SQLException {
-        if (!isFenTablePopulated(statement)) {
-            statement.executeUpdate("INSERT INTO fen (fen_value) VALUES ('initial_fen_value');");
-        }
-    }
-
-    private boolean isFenTablePopulated(Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery("SELECT 1 FROM fen LIMIT 1;")) {
-            return resultSet.next();
-        }
-    }
-
-    public boolean isInitialGame() {
-        return "initial_fen_value".equals(loadFenValue());
     }
 
     public void updateFen(String fen) {
@@ -71,6 +56,6 @@ public final class ChessDao {
     }
 
     public void initFen() {
-        updateFen("initial_fen_value");
+        updateFen(null);
     }
 }
